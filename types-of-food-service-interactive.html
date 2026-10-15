@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Types of Food Service — Interactive Worksheet</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root{
+    --primary:#1f6f54;
+    --primary-dark:#154d3a;
+    --accent:#e8a33d;
+    --bg:#f6f4ef;
+    --card:#ffffff;
+    --text:#2b2b2b;
+    --muted:#6b6b6b;
+    --good:#2e9e5b;
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    margin:0;
+    padding:0 0 60px;
+  }
+  header{
+    background:linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color:#fff;
+    padding:28px 20px 70px;
+    text-align:center;
+    position:relative;
+  }
+  header h1{margin:0 0 8px; font-size:1.9em;}
+  header p{margin:0; opacity:.9; max-width:700px; margin-left:auto; margin-right:auto;}
+  .scoreboard{
+    max-width:900px;
+    margin:-45px auto 30px;
+    background:var(--card);
+    border-radius:16px;
+    box-shadow:0 8px 24px rgba(0,0,0,.12);
+    padding:18px 24px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:18px;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .progress-wrap{flex:1; min-width:220px;}
+  .progress-bar-bg{
+    background:#e4e0d6;
+    border-radius:20px;
+    height:16px;
+    overflow:hidden;
+  }
+  .progress-bar-fill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg, var(--accent), var(--primary));
+    transition:width .4s ease;
+    border-radius:20px;
+  }
+  .progress-label{font-size:.8em; color:var(--muted); margin-top:4px; text-align:center;}
+  .badges{display:flex; gap:8px; flex-wrap:wrap; justify-content:center;}
+  .badge{
+    font-size:.72em;
+    padding:5px 10px;
+    border-radius:20px;
+    background:#eee;
+    color:#999;
+    border:1px solid #ddd;
+    white-space:nowrap;
+  }
+  .badge.unlocked{
+    background:var(--accent);
+    color:#fff;
+    border-color:var(--accent);
+    font-weight:600;
+  }
+  main{max-width:900px; margin:0 auto; padding:0 20px;}
+  .card{
+    background:var(--card);
+    border-radius:14px;
+    padding:24px 26px;
+    margin-bottom:26px;
+    box-shadow:0 2px 10px rgba(0,0,0,.06);
+  }
+  .card h2{
+    color:var(--primary-dark);
+    border-bottom:3px solid var(--accent);
+    display:inline-block;
+    padding-bottom:4px;
+    margin-top:0;
+  }
+  .card h3{color:var(--primary-dark); margin-bottom:6px;}
+  label{font-weight:600; display:block; margin:14px 0 6px;}
+  textarea, input[type=text]{
+    width:100%;
+    border:1px solid #cfcac0;
+    border-radius:8px;
+    padding:10px 12px;
+    font-family:inherit;
+    font-size:.95em;
+    resize:vertical;
+  }
+  textarea:focus, input[type=text]:focus{outline:2px solid var(--primary); border-color:var(--primary);}
+  .hint{font-size:.82em; color:var(--muted); margin-top:-2px; margin-bottom:6px;}
+  .checkmark{
+    display:none;
+    color:var(--good);
+    font-weight:700;
+    margin-left:6px;
+  }
+  .checkmark.show{display:inline;}
+
+  /* Matching activity */
+  .match-game{display:flex; gap:24px; flex-wrap:wrap; margin-top:12px;}
+  .match-col{flex:1; min-width:240px;}
+  .match-item{
+    background:#f1efe8;
+    border:2px solid #d9d3c5;
+    border-radius:10px;
+    padding:10px 14px;
+    margin-bottom:10px;
+    cursor:pointer;
+    transition:.15s;
+    user-select:none;
+  }
+  .match-item.selected{border-color:var(--primary); background:#e3f3ec;}
+  .match-item.correct{border-color:var(--good); background:#e4f8ec; cursor:default;}
+  .match-item.wrong{animation:shake .3s;}
+  @keyframes shake{
+    0%,100%{transform:translateX(0);}
+    25%{transform:translateX(-5px);}
+    75%{transform:translateX(5px);}
+  }
+  .game-feedback{margin-top:10px; font-weight:600;}
+
+  /* Venue tabs */
+  .venue-tabs{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px;}
+  .venue-tab{
+    flex:1;
+    min-width:140px;
+    text-align:center;
+    padding:14px 10px;
+    border-radius:12px;
+    background:#f1efe8;
+    border:2px solid transparent;
+    cursor:pointer;
+    font-weight:600;
+    transition:.15s;
+  }
+  .venue-tab:hover{background:#e7e2d4;}
+  .venue-tab.active{
+    background:var(--primary);
+    color:#fff;
+    border-color:var(--primary-dark);
+  }
+  .venue-emoji{font-size:1.6em; display:block; margin-bottom:4px;}
+  .venue-panel{display:none; animation:fadein .3s;}
+  .venue-panel.active{display:block;}
+  @keyframes fadein{from{opacity:0;} to{opacity:1;}}
+  .fact-box{
+    background:#fff8ea;
+    border-left:4px solid var(--accent);
+    padding:10px 14px;
+    border-radius:6px;
+    font-size:.88em;
+    margin:10px 0 16px;
+  }
+
+  .btn{
+    background:var(--primary);
+    color:#fff;
+    border:none;
+    padding:10px 18px;
+    border-radius:8px;
+    font-weight:600;
+    cursor:pointer;
+    font-size:.9em;
+    transition:.15s;
+  }
+  .btn:hover{background:var(--primary-dark);}
+  .btn.secondary{background:#fff; color:var(--primary); border:2px solid var(--primary);}
+  .actions{display:flex; gap:12px; flex-wrap:wrap; margin-top:16px;}
+
+  .completion-banner{
+    display:none;
+    text-align:center;
+    background:linear-gradient(135deg, var(--accent), #d98c1a);
+    color:#fff;
+    padding:22px;
+    border-radius:14px;
+    font-size:1.1em;
+    font-weight:700;
+    margin-bottom:26px;
+  }
+  .completion-banner.show{display:block;}
+  footer{text-align:center; color:var(--muted); font-size:.82em; margin-top:10px;}
+  .name-field{max-width:320px;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Types of Food Service</h1>
+  <p>Chapter 1: Food Service Management by Design — complete each section below. Your answers are saved automatically on this device as you type.</p>
+</header>
+
+<main>
+
+  <div class="scoreboard">
+    <div class="progress-wrap">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+      <div class="progress-label" id="progressLabel">0% complete</div>
+    </div>
+    <div class="badges" id="badgeRow">
+      <span class="badge" data-badge="definer">Definitions Complete</span>
+      <span class="badge" data-badge="matcher">Matching Activity Complete</span>
+      <span class="badge" data-badge="researcher">Venue Research Complete</span>
+      <span class="badge" data-badge="reflector">Reflection Complete</span>
+      <span class="badge" data-badge="allstar">Worksheet Complete</span>
+    </div>
+  </div>
+
+  <div class="completion-banner" id="completionBanner">You've completed every section of this worksheet. Nice work.</div>
+
+  <div class="card">
+    <label for="studentName">Name</label>
+    <input type="text" id="studentName" class="name-field" placeholder="Type your name" data-weight="0">
+  </div>
+
+  <!-- PART 1 -->
+  <div class="card">
+    <h2>Part 1 — Defining Foodservice Types</h2>
+
+    <label>1a. Define Commercial Foodservice in your own words <span class="checkmark" id="chk-def1">✓</span></label>
+    <div class="hint">Think: who is the primary customer, and what is the main business goal?</div>
+    <textarea rows="3" data-answer-id="def1" placeholder="Type your definition here..."></textarea>
+
+    <label>1b. Define Non-Commercial Foodservice in your own words <span class="checkmark" id="chk-def2">✓</span></label>
+    <div class="hint">Think: is the food service the main business, or does it support another mission (like healing, learning, or care)?</div>
+    <textarea rows="3" data-answer-id="def2" placeholder="Type your definition here..."></textarea>
+
+    <label>2. What are the main goals/priorities that make commercial and non-commercial operations different?</label>
+    <textarea rows="3" data-answer-id="goals" placeholder="Explain the difference in priorities..."></textarea>
+
+    <h3 style="margin-top:28px;">Matching Activity: Commercial or Non-Commercial?</h3>
+    <p class="hint">Click an example on the left, then click the matching category on the right. Match all 5 correctly to complete this activity.</p>
+    <div class="match-game">
+      <div class="match-col" id="matchLeft"></div>
+      <div class="match-col" id="matchRight"></div>
+    </div>
+    <div class="game-feedback" id="matchFeedback"></div>
+  </div>
+
+  <!-- PART 2 -->
+  <div class="card">
+    <h2>Part 2 — Group Focus: Your Assigned Venue</h2>
+    <p>Select the venue your group was assigned. Each tab includes a quick fact and guided prompts — use these to build your poster.</p>
+
+    <div class="venue-tabs" id="venueTabs">
+      <div class="venue-tab active" data-venue="hospitals"><span class="venue-emoji">🏥</span>Hospitals</div>
+      <div class="venue-tab" data-venue="ltc"><span class="venue-emoji">🧓</span>Long-Term Care</div>
+      <div class="venue-tab" data-venue="schools"><span class="venue-emoji">🏫</span>Schools</div>
+      <div class="venue-tab" data-venue="correctional"><span class="venue-emoji">🔒</span>Correctional</div>
+    </div>
+
+    <div class="venue-panel active" data-venue-panel="hospitals">
+      <div class="fact-box">Hospital foodservice must coordinate with clinical staff to deliver therapeutic (modified) diets ordered by physicians and dietitians, often using room-service or tray-line delivery systems.</div>
+      <label>1. Define Hospitals as a foodservice venue</label>
+      <textarea rows="2" data-answer-id="hosp1"></textarea>
+      <label>2. Who are the main customers/population served?</label>
+      <textarea rows="2" data-answer-id="hosp2"></textarea>
+      <label>3. How is food prepared, served, and distributed here?</label>
+      <textarea rows="2" data-answer-id="hosp3"></textarea>
+    </div>
+
+    <div class="venue-panel" data-venue-panel="ltc">
+      <div class="fact-box">Long-term care (skilled nursing/assisted living) foodservice focuses on consistent, familiar meals for residents who may stay for months or years, often with texture-modified diets for chewing/swallowing needs.</div>
+      <label>1. Define Long-Term Care as a foodservice venue</label>
+      <textarea rows="2" data-answer-id="ltc1"></textarea>
+      <label>2. Who are the main customers/population served?</label>
+      <textarea rows="2" data-answer-id="ltc2"></textarea>
+      <label>3. How is food prepared, served, and distributed here?</label>
+      <textarea rows="2" data-answer-id="ltc3"></textarea>
+    </div>
+
+    <div class="venue-panel" data-venue-panel="schools">
+      <div class="fact-box">School foodservice (K-12 or college) often follows federal nutrition guidelines (e.g., National School Lunch Program) and must serve large numbers of students within tight time windows.</div>
+      <label>1. Define Schools as a foodservice venue</label>
+      <textarea rows="2" data-answer-id="sch1"></textarea>
+      <label>2. Who are the main customers/population served?</label>
+      <textarea rows="2" data-answer-id="sch2"></textarea>
+      <label>3. How is food prepared, served, and distributed here?</label>
+      <textarea rows="2" data-answer-id="sch3"></textarea>
+    </div>
+
+    <div class="venue-panel" data-venue-panel="correctional">
+      <div class="fact-box">Correctional foodservice must balance strict security protocols, cost control, and nutritional adequacy while feeding large populations on fixed schedules.</div>
+      <label>1. Define Correctional Facilities as a foodservice venue</label>
+      <textarea rows="2" data-answer-id="corr1"></textarea>
+      <label>2. Who are the main customers/population served?</label>
+      <textarea rows="2" data-answer-id="corr2"></textarea>
+      <label>3. How is food prepared, served, and distributed here?</label>
+      <textarea rows="2" data-answer-id="corr3"></textarea>
+    </div>
+    <div class="hint" style="margin-top:14px;">Remember: your group should still build a visual poster with these answers for presentation day.</div>
+  </div>
+
+  <!-- PART 3 -->
+  <div class="card">
+    <h2>Part 3 — Reflection Questions</h2>
+
+    <label>What unique challenges would you expect for this type of food service operation?</label>
+    <textarea rows="3" data-answer-id="refl1"></textarea>
+
+    <label>After hearing all groups present, how does your assigned venue compare to the others?</label>
+    <textarea rows="3" data-answer-id="refl2"></textarea>
+
+    <label>If you worked in your assigned venue, what skills would be most valuable?</label>
+    <textarea rows="3" data-answer-id="refl3"></textarea>
+  </div>
+
+  <div class="actions">
+    <button class="btn" id="checkProgressBtn">Check My Progress</button>
+    <button class="btn secondary" id="printBtn">Print / Save as PDF</button>
+    <button class="btn secondary" id="resetBtn">Reset Worksheet</button>
+  </div>
+
+  <footer>Progress is saved locally in this browser. Use "Check My Progress" anytime to update your status.</footer>
+</main>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'foodservice_worksheet_v2';
+
+  // ---------- Matching activity data ----------
+  const matchData = [
+    {term:"A fine-dining restaurant downtown", answer:"commercial"},
+    {term:"A hospital cafeteria serving patient trays", answer:"noncommercial"},
+    {term:"A food truck at a festival", answer:"commercial"},
+    {term:"A K-12 school cafeteria", answer:"noncommercial"},
+    {term:"A correctional facility dining hall", answer:"noncommercial"}
+  ];
+  let shuffledTerms = [...matchData].sort(()=>Math.random()-0.5);
+  let matchState = { selectedTerm:null, correctCount:0, locked:{} };
+
+  function renderMatchGame(){
+    const left = document.getElementById('matchLeft');
+    const right = document.getElementById('matchRight');
+    left.innerHTML = '';
+    right.innerHTML = '';
+    shuffledTerms.forEach((item, idx)=>{
+      const div = document.createElement('div');
+      div.className = 'match-item';
+      div.textContent = item.term;
+      div.dataset.idx = idx;
+      div.addEventListener('click', ()=>onTermClick(idx, div));
+      left.appendChild(div);
+    });
+    const categories = [
+      {label:"Commercial Foodservice", key:"commercial"},
+      {label:"Non-Commercial Foodservice", key:"noncommercial"}
+    ].sort(()=>Math.random()-0.5);
+    categories.forEach(cat=>{
+      const div = document.createElement('div');
+      div.className = 'match-item';
+      div.textContent = cat.label;
+      div.dataset.key = cat.key;
+      div.addEventListener('click', ()=>onCategoryClick(cat.key, div));
+      right.appendChild(div);
+    });
+  }
+
+  function onTermClick(idx, el){
+    if(matchState.locked[idx]) return;
+    document.querySelectorAll('#matchLeft .match-item').forEach(e=>e.classList.remove('selected'));
+    el.classList.add('selected');
+    matchState.selectedTerm = idx;
+  }
+
+  function onCategoryClick(key, el){
+    if(matchState.selectedTerm === null) return;
+    const idx = matchState.selectedTerm;
+    if(matchState.locked[idx]) return;
+    const correct = shuffledTerms[idx].answer === key;
+    const termEl = document.querySelector(`#matchLeft .match-item[data-idx="${idx}"]`);
+    const feedback = document.getElementById('matchFeedback');
+    if(correct){
+      termEl.classList.add('correct');
+      termEl.classList.remove('selected');
+      matchState.locked[idx] = true;
+      matchState.correctCount++;
+      feedback.textContent = "Correct match.";
+      feedback.style.color = "var(--good)";
+      if(matchState.correctCount === matchData.length){
+        feedback.textContent = "All items matched. Matching activity complete.";
+        state.badges.matcher = true;
+        state.matchComplete = true;
+        saveState();
+      }
+    } else {
+      termEl.classList.add('wrong');
+      feedback.textContent = "Not quite — try again.";
+      feedback.style.color = "#c0392b";
+      setTimeout(()=>termEl.classList.remove('wrong'), 300);
+    }
+    matchState.selectedTerm = null;
+    updateScore();
+  }
+
+  // ---------- Venue tabs ----------
+  document.querySelectorAll('.venue-tab').forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      document.querySelectorAll('.venue-tab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('.venue-panel').forEach(p=>p.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelector(`.venue-panel[data-venue-panel="${tab.dataset.venue}"]`).classList.add('active');
+      state.visitedVenue = true;
+      saveState();
+      updateScore();
+    });
+  });
+
+  // ---------- State management ----------
+  let state = {
+    answers: {},
+    badges: { definer:false, matcher:false, researcher:false, reflector:false, allstar:false },
+    matchComplete: false,
+    visitedVenue: false
+  };
+
+  function loadState(){
+    try{
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if(saved) state = Object.assign(state, saved);
+    }catch(e){}
+  }
+
+  function saveState(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function applyAnswersToInputs(){
+    document.querySelectorAll('[data-answer-id]').forEach(el=>{
+      const id = el.dataset.answerId;
+      if(state.answers[id]) el.value = state.answers[id];
+    });
+    const nameEl = document.getElementById('studentName');
+    if(state.answers['studentName']) nameEl.value = state.answers['studentName'];
+  }
+
+  document.querySelectorAll('[data-answer-id]').forEach(el=>{
+    el.addEventListener('input', ()=>{
+      state.answers[el.dataset.answerId] = el.value;
+      saveState();
+      updateScore();
+    });
+  });
+  document.getElementById('studentName').addEventListener('input', (e)=>{
+    state.answers['studentName'] = e.target.value;
+    saveState();
+  });
+
+  function wordCount(str){
+    return (str || '').trim().split(/\s+/).filter(Boolean).length;
+  }
+
+  function updateScore(){
+    let completedSections = 0;
+    let totalSections = 5; // definitions, matching, venue research, reflection, overall
+
+    // Definitions
+    ['def1','def2'].forEach(id=>{
+      const val = state.answers[id] || '';
+      const chk = document.getElementById('chk-'+id);
+      if(wordCount(val) >= 8){
+        if(chk) chk.classList.add('show');
+      } else if(chk){
+        chk.classList.remove('show');
+      }
+    });
+    const definitionsDone = wordCount(state.answers['def1']) >= 8 && wordCount(state.answers['def2']) >= 8;
+    state.badges.definer = definitionsDone;
+    if(definitionsDone) completedSections++;
+
+    // Matching activity
+    if(state.matchComplete) completedSections++;
+
+    // Part 2 venue answers — complete if any one venue's three prompts are filled
+    const bestVenueCount = Math.max(
+      ['hosp1','hosp2','hosp3'].filter(k=>wordCount(state.answers[k])>=5).length,
+      ['ltc1','ltc2','ltc3'].filter(k=>wordCount(state.answers[k])>=5).length,
+      ['sch1','sch2','sch3'].filter(k=>wordCount(state.answers[k])>=5).length,
+      ['corr1','corr2','corr3'].filter(k=>wordCount(state.answers[k])>=5).length
+    );
+    const researchDone = bestVenueCount === 3;
+    state.badges.researcher = researchDone;
+    if(researchDone) completedSections++;
+
+    // Part 3 reflections
+    const reflectionDone = ['refl1','refl2','refl3'].every(id=>wordCount(state.answers[id]) >= 10);
+    state.badges.reflector = reflectionDone;
+    if(reflectionDone) completedSections++;
+
+    // Overall completion
+    const allDone = state.badges.definer && state.badges.matcher && state.badges.researcher && state.badges.reflector;
+    state.badges.allstar = allDone;
+    if(allDone) completedSections++;
+
+    const pct = Math.round((completedSections/totalSections)*100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = pct + '% complete';
+
+    document.querySelectorAll('.badge').forEach(b=>{
+      const key = b.dataset.badge;
+      b.classList.toggle('unlocked', !!state.badges[key]);
+    });
+
+    const banner = document.getElementById('completionBanner');
+    banner.classList.toggle('show', !!state.badges.allstar);
+
+    saveState();
+  }
+
+  document.getElementById('checkProgressBtn').addEventListener('click', updateScore);
+  document.getElementById('printBtn').addEventListener('click', ()=>window.print());
+  document.getElementById('resetBtn').addEventListener('click', ()=>{
+    if(confirm('This will clear all your answers. Are you sure?')){
+      localStorage.removeItem(STORAGE_KEY);
+      location.reload();
+    }
+  });
+
+  // init
+  loadState();
+  applyAnswersToInputs();
+  renderMatchGame();
+  updateScore();
+})();
+</script>
+
+</body>
+</html>
